@@ -14,7 +14,7 @@ type StallSummary = {
 export function StallOverview({ parts }: { parts: MissingPart[] }) {
   const now = useLiveNow();
   const activeParts = parts.filter((part) => activeStatuses.includes(part.status));
-  const stallOrder: Stall[] = ["Stall 6", "Stall 7", "Stall 1", "Stall 2", "Stall 3", "Stall 4", "Stall 5", "Head Stall"];
+  const stallOrder: Stall[] = ["Head Stall", "Stall 1", "Stall 2", "Stall 3", "Stall 4", "Stall 5", "Stall 6", "Stall 7"];
   const summaries: StallSummary[] = stallOrder.map((stall) => {
     const stallParts = activeParts.filter((part) => part.stall === stall);
     const oldestPart = stallParts.reduce<MissingPart | null>((oldest, part) => {
