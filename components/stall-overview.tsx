@@ -39,6 +39,8 @@ export function StallOverview({ parts }: { parts: MissingPart[] }) {
 }
 
 function StallCard({ summary, now }: { summary: StallSummary; now: Date }) {
+  const overOneHour = summary.oldestPart ? minutesWaiting(summary.oldestPart.created_at, now) >= 60 : false;
+
   return (
     <article className="stall-card">
       <strong>{summary.stall}</strong>
@@ -48,7 +50,11 @@ function StallCard({ summary, now }: { summary: StallSummary; now: Date }) {
       </span>
       <span>
         <Clock size={14} />
-        {summary.oldestPart ? waitingTimerLabel(summary.oldestPart.created_at, now) : "No wait"}
+        {summary.oldestPart ? (
+          <span className={overOneHour ? "waiting-timer overdue" : "waiting-timer"}>{waitingTimerLabel(summary.oldestPart.created_at, now)}</span>
+        ) : (
+          "No wait"
+        )}
       </span>
     </article>
   );

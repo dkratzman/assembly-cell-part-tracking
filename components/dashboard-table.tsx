@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CheckCircle2, Clock } from "lucide-react";
 import { StatusPill } from "@/components/status-pill";
 import { useLiveNow } from "@/hooks/use-live-now";
-import { isUrgent, waitingTimerLabel } from "@/lib/parts";
+import { isUrgent, minutesWaiting, waitingTimerLabel } from "@/lib/parts";
 import { partStatuses } from "@/lib/types";
 import type { MissingPart, PartStatus } from "@/lib/types";
 
@@ -85,6 +85,7 @@ function DashboardRow({
   }
 
   const urgent = isUrgent(part, now);
+  const overOneHour = minutesWaiting(part.created_at, now) >= 60;
 
   return (
     <tr className={urgent ? "row-urgent" : undefined}>
@@ -139,7 +140,7 @@ function DashboardRow({
         {error ? <small className="error">{error}</small> : null}
       </td>
       <td>
-        <span className="waiting-timer">{waitingTimerLabel(part.created_at, now)}</span>
+        <span className={overOneHour ? "waiting-timer overdue" : "waiting-timer"}>{waitingTimerLabel(part.created_at, now)}</span>
       </td>
     </tr>
   );

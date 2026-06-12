@@ -287,6 +287,10 @@ tr.row-urgent td {
   font-weight: 900;
 }
 
+.waiting-timer.overdue {
+  color: var(--red);
+}
+
 .status-pill {
   display: inline-flex;
   align-items: center;
@@ -445,6 +449,10 @@ tr.row-urgent td {
   gap: 5px;
   font-size: 12px;
   font-weight: 800;
+}
+
+.stall-card .waiting-timer {
+  min-width: auto;
 }
 
 @media (max-width: 900px) {
