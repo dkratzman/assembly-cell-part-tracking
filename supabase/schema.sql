@@ -13,7 +13,7 @@ create type part_status as enum (
   'Entered by Mistake'
 );
 
-create type criticality_level as enum ('Normal', 'Critical', 'Line Down');
+create type criticality_level as enum ('Normal', 'Critical');
 
 create type kit_context as enum ('Kit', 'Subassembly', 'Part Only', 'Unknown');
 

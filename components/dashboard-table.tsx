@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AlertTriangle, CheckCircle2, Clock } from "lucide-react";
+import { CheckCircle2, Clock } from "lucide-react";
 import { StatusPill } from "@/components/status-pill";
 import { useLiveNow } from "@/hooks/use-live-now";
 import { isUrgent, waitingTimerLabel } from "@/lib/parts";
@@ -90,7 +90,6 @@ function DashboardRow({
     <tr className={urgent ? "row-urgent" : undefined}>
       <td>
         <div className="priority-cell">
-          {part.criticality === "Line Down" ? <AlertTriangle size={18} /> : null}
           {part.criticality === "Critical" ? <Clock size={18} /> : null}
           {part.status === "Delivered to Stall" ? <CheckCircle2 size={18} /> : null}
           <span>{part.criticality}</span>

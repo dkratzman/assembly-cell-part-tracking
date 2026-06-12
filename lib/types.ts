@@ -11,7 +11,7 @@ export const stalls = [
 
 export const kitContexts = ["Kit", "Subassembly", "Part Only", "Unknown"] as const;
 
-export const criticalityLevels = ["Normal", "Critical", "Line Down"] as const;
+export const criticalityLevels = ["Normal", "Critical"] as const;
 
 export const partStatuses = [
   "Missing",

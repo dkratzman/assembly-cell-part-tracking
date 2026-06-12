@@ -35,7 +35,6 @@ export function waitingTimerLabel(createdAt: string, now = new Date()) {
 
 export function urgencyScore(part: MissingPart, now = new Date()) {
   const criticalityWeight: Record<CriticalityLevel, number> = {
-    "Line Down": 3000,
     Critical: 2000,
     Normal: 0,
   };
