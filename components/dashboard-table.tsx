@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { AlertTriangle, CheckCircle2, Clock } from "lucide-react";
 import { StatusPill } from "@/components/status-pill";
-import { isUrgent, waitingLabel } from "@/lib/parts";
+import { useLiveNow } from "@/hooks/use-live-now";
+import { isUrgent, waitingTimerLabel } from "@/lib/parts";
 import { partStatuses } from "@/lib/types";
 import type { MissingPart, PartStatus } from "@/lib/types";
 
@@ -16,6 +17,8 @@ type DashboardTableProps = {
 };
 
 export function DashboardTable({ parts, loading, error, editable, onUpdatePart }: DashboardTableProps) {
+  const now = useLiveNow();
+
   if (loading) {
     return <div className="panel muted">Loading missing parts...</div>;
   }
@@ -46,7 +49,7 @@ export function DashboardTable({ parts, loading, error, editable, onUpdatePart }
         </thead>
         <tbody>
           {parts.map((part) => (
-            <DashboardRow key={part.id} part={part} editable={editable} onUpdatePart={onUpdatePart} />
+            <DashboardRow key={part.id} part={part} editable={editable} now={now} onUpdatePart={onUpdatePart} />
           ))}
         </tbody>
       </table>
@@ -57,10 +60,12 @@ export function DashboardTable({ parts, loading, error, editable, onUpdatePart }
 function DashboardRow({
   part,
   editable,
+  now,
   onUpdatePart,
 }: {
   part: MissingPart;
   editable: boolean;
+  now: Date;
   onUpdatePart?: DashboardTableProps["onUpdatePart"];
 }) {
   const [pending, setPending] = useState(false);
@@ -79,7 +84,7 @@ function DashboardRow({
     }
   }
 
-  const urgent = isUrgent(part);
+  const urgent = isUrgent(part, now);
 
   return (
     <tr className={urgent ? "row-urgent" : undefined}>
@@ -134,7 +139,9 @@ function DashboardRow({
         )}
         {error ? <small className="error">{error}</small> : null}
       </td>
-      <td>{waitingLabel(part.created_at)}</td>
+      <td>
+        <span className="waiting-timer">{waitingTimerLabel(part.created_at, now)}</span>
+      </td>
     </tr>
   );
 }

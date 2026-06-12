@@ -1,4 +1,4 @@
-import { differenceInMinutes, formatDistanceToNowStrict, parseISO } from "date-fns";
+import { differenceInMinutes, differenceInSeconds, parseISO } from "date-fns";
 import type { CriticalityLevel, MissingPart, PartStatus } from "@/lib/types";
 
 export const activeStatuses: PartStatus[] = [
@@ -16,15 +16,24 @@ export function isClosed(status: PartStatus) {
   return closedStatuses.includes(status);
 }
 
-export function minutesWaiting(createdAt: string) {
-  return differenceInMinutes(new Date(), parseISO(createdAt));
+export function minutesWaiting(createdAt: string, now = new Date()) {
+  return differenceInMinutes(now, parseISO(createdAt));
 }
 
-export function waitingLabel(createdAt: string) {
-  return formatDistanceToNowStrict(parseISO(createdAt), { addSuffix: false });
+export function waitingTimerLabel(createdAt: string, now = new Date()) {
+  const totalSeconds = Math.max(0, differenceInSeconds(now, parseISO(createdAt)));
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const twoDigit = (value: number) => value.toString().padStart(2, "0");
+
+  if (days > 0) return `${days}d ${twoDigit(hours)}:${twoDigit(minutes)}:${twoDigit(seconds)}`;
+  if (hours > 0) return `${hours}:${twoDigit(minutes)}:${twoDigit(seconds)}`;
+  return `${minutes}:${twoDigit(seconds)}`;
 }
 
-export function urgencyScore(part: MissingPart) {
+export function urgencyScore(part: MissingPart, now = new Date()) {
   const criticalityWeight: Record<CriticalityLevel, number> = {
     "Line Down": 3000,
     Critical: 2000,
@@ -41,11 +50,11 @@ export function urgencyScore(part: MissingPart) {
     "Entered by Mistake": -1000,
   };
 
-  return criticalityWeight[part.criticality] + statusWeight[part.status] + minutesWaiting(part.created_at);
+  return criticalityWeight[part.criticality] + statusWeight[part.status] + minutesWaiting(part.created_at, now);
 }
 
-export function isUrgent(part: MissingPart) {
-  return part.criticality !== "Normal" || minutesWaiting(part.created_at) >= 60;
+export function isUrgent(part: MissingPart, now = new Date()) {
+  return part.criticality !== "Normal" || minutesWaiting(part.created_at, now) >= 60;
 }
 
 export function statusTone(part: MissingPart) {

@@ -1,5 +1,7 @@
 create extension if not exists pgcrypto;
 
+create schema if not exists private;
+
 create type part_status as enum (
   'Missing',
   'Ordered',
@@ -52,21 +54,22 @@ begin
   end if;
   return new;
 end;
-$$ language plpgsql;
+$$ language plpgsql
+set search_path = public, pg_temp;
 
 drop trigger if exists missing_parts_updated_at on missing_parts;
 create trigger missing_parts_updated_at
 before update on missing_parts
 for each row execute function set_missing_parts_updated_at();
 
-create or replace function log_missing_part_status_event()
+create or replace function private.log_missing_part_status_event()
 returns trigger as $$
 begin
   if tg_op = 'INSERT' then
-    insert into part_events (part_id, event_type, to_status, details)
+    insert into public.part_events (part_id, event_type, to_status, details)
     values (new.id, 'created', new.status, jsonb_build_object('eso', new.eso, 'part_no', new.part_no));
   elsif old.status is distinct from new.status or old.eta is distinct from new.eta then
-    insert into part_events (part_id, event_type, from_status, to_status, details)
+    insert into public.part_events (part_id, event_type, from_status, to_status, details)
     values (
       new.id,
       'updated',
@@ -77,12 +80,21 @@ begin
   end if;
   return new;
 end;
-$$ language plpgsql;
+$$ language plpgsql
+security definer
+set search_path = public, pg_temp;
+
+revoke all on schema private from public;
+revoke all on function private.log_missing_part_status_event() from public, anon, authenticated;
 
 drop trigger if exists missing_parts_event_log on missing_parts;
 create trigger missing_parts_event_log
 after insert or update on missing_parts
-for each row execute function log_missing_part_status_event();
+for each row execute function private.log_missing_part_status_event();
+
+drop function if exists public.log_missing_part_status_event();
+
+create index if not exists part_events_part_id_idx on part_events(part_id);
 
 alter table missing_parts enable row level security;
 alter table part_events enable row level security;
