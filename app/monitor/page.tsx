@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import { DashboardTable } from "@/components/dashboard-table";
 import { FilterBar, type Filters } from "@/components/filter-bar";
-import { PageHeader } from "@/components/page-header";
 import { StallOverview } from "@/components/stall-overview";
 import { useMissingParts } from "@/hooks/use-missing-parts";
 import { activeStatuses, sortByPriority } from "@/lib/parts";
@@ -26,12 +25,7 @@ export default function MonitorPage() {
   }, [filters, parts]);
 
   return (
-    <section className="page">
-      <PageHeader
-        eyebrow="Read-only view"
-        title="Monitor"
-        description="A simple live view for team leads, supervisors, and leadership."
-      />
+    <section className="page monitor-page">
       <StallOverview parts={parts} />
       <FilterBar filters={filters} onChange={setFilters} />
       <DashboardTable parts={visibleParts} loading={loading} error={error} editable={false} />

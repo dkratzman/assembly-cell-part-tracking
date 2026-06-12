@@ -98,6 +98,12 @@ a {
   color: var(--cat-yellow);
 }
 
+.nav-link.active {
+  background: var(--cat-yellow);
+  color: var(--cat-black);
+  box-shadow: inset 4px 0 0 #ffffff;
+}
+
 main {
   min-width: 0;
 }
@@ -110,6 +116,10 @@ main {
 
 .page.narrow {
   max-width: 980px;
+}
+
+.monitor-page {
+  padding-top: 22px;
 }
 
 .page-header {
