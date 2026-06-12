@@ -44,7 +44,7 @@ function StallCard({ summary, now }: { summary: StallSummary; now: Date }) {
       <strong>{summary.stall}</strong>
       <span>
         <PackageSearch size={14} />
-        {summary.count} active {summary.count === 1 ? "part" : "parts"}
+        {summary.count} missing {summary.count === 1 ? "part" : "parts"}
       </span>
       <span>
         <Clock size={14} />
