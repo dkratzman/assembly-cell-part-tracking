@@ -3,7 +3,6 @@
 import { Clock, PackageSearch } from "lucide-react";
 import { useLiveNow } from "@/hooks/use-live-now";
 import { activeStatuses, minutesWaiting, waitingTimerLabel } from "@/lib/parts";
-import { stalls } from "@/lib/types";
 import type { MissingPart, Stall } from "@/lib/types";
 
 type StallSummary = {
@@ -15,7 +14,8 @@ type StallSummary = {
 export function StallOverview({ parts }: { parts: MissingPart[] }) {
   const now = useLiveNow();
   const activeParts = parts.filter((part) => activeStatuses.includes(part.status));
-  const summaries: StallSummary[] = stalls.map((stall) => {
+  const stallOrder: Stall[] = ["Stall 6", "Stall 7", "Stall 1", "Stall 2", "Stall 3", "Stall 4", "Stall 5", "Head Stall"];
+  const summaries: StallSummary[] = stallOrder.map((stall) => {
     const stallParts = activeParts.filter((part) => part.stall === stall);
     const oldestPart = stallParts.reduce<MissingPart | null>((oldest, part) => {
       if (!oldest) return part;
@@ -29,39 +29,18 @@ export function StallOverview({ parts }: { parts: MissingPart[] }) {
     };
   });
 
-  const mainStalls = summaries.filter((summary) => summary.stall !== "Stall 6" && summary.stall !== "Stall 7" && summary.stall !== "Head Stall");
-  const sideStalls = summaries.filter((summary) => summary.stall === "Stall 6" || summary.stall === "Stall 7");
-  const headStall = summaries.find((summary) => summary.stall === "Head Stall");
-
   return (
     <section className="stall-overview" aria-label="Stall overview">
-      <div className="stall-side">
-        {sideStalls.map((summary) => (
-          <StallCard key={summary.stall} summary={summary} now={now} compact />
-        ))}
-      </div>
-
-      <div className="stall-center">
-        <div className="overview-title">Assembly Cell Parts Overview</div>
-        <div className="stall-grid">
-          {mainStalls.map((summary) => (
-            <StallCard key={summary.stall} summary={summary} now={now} />
-          ))}
-        </div>
-      </div>
-
-      {headStall ? (
-        <div className="stall-head">
-          <StallCard summary={headStall} now={now} compact />
-        </div>
-      ) : null}
+      {summaries.map((summary) => (
+        <StallCard key={summary.stall} summary={summary} now={now} />
+      ))}
     </section>
   );
 }
 
-function StallCard({ summary, now, compact = false }: { summary: StallSummary; now: Date; compact?: boolean }) {
+function StallCard({ summary, now }: { summary: StallSummary; now: Date }) {
   return (
-    <article className={compact ? "stall-card compact" : "stall-card"}>
+    <article className="stall-card">
       <strong>{summary.stall}</strong>
       <span>
         <PackageSearch size={14} />

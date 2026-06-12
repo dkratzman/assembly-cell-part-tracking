@@ -401,58 +401,30 @@ tr.row-urgent td {
 
 .stall-overview {
   display: grid;
-  grid-template-columns: 150px minmax(0, 1fr) 150px;
-  gap: 18px;
-  align-items: end;
+  grid-template-columns: repeat(8, minmax(130px, 1fr));
+  gap: 22px;
+  align-items: stretch;
   margin-bottom: 18px;
-}
-
-.stall-side,
-.stall-head {
-  display: grid;
-  gap: 12px;
-}
-
-.stall-head {
-  align-self: end;
-}
-
-.stall-center {
-  display: grid;
-  gap: 18px;
-}
-
-.overview-title {
-  border: 2px solid var(--cat-black);
-  background: #ffffff;
-  color: var(--cat-black);
-  padding: 12px 18px;
-  font-size: clamp(28px, 4vw, 44px);
-  line-height: 1;
-}
-
-.stall-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(120px, 1fr));
-  gap: 18px;
+  overflow-x: auto;
+  padding-bottom: 8px;
 }
 
 .stall-card {
   display: grid;
   place-items: center;
   gap: 7px;
-  min-height: 112px;
+  min-height: 140px;
   border: 2px solid var(--cat-black);
   background: var(--cat-charcoal);
   color: #ffffff;
-  padding: 14px 10px;
+  padding: 18px 12px;
   text-align: center;
   box-shadow: 0 8px 0 var(--cat-yellow);
 }
 
 .stall-card strong {
   color: var(--cat-yellow);
-  font-size: 23px;
+  font-size: clamp(22px, 1.8vw, 30px);
   line-height: 1;
 }
 
@@ -463,10 +435,6 @@ tr.row-urgent td {
   gap: 5px;
   font-size: 12px;
   font-weight: 800;
-}
-
-.stall-card.compact {
-  min-height: 108px;
 }
 
 @media (max-width: 900px) {
@@ -509,17 +477,7 @@ tr.row-urgent td {
   }
 
   .stall-overview {
-    grid-template-columns: 1fr;
-  }
-
-  .stall-side,
-  .stall-head,
-  .stall-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .overview-title {
-    font-size: 30px;
   }
 
   .history-item {
