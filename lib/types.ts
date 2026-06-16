@@ -63,3 +63,21 @@ export type MissingPartInsert = Pick<
   status?: PartStatus;
   eta?: string | null;
 };
+
+export const improvementAreas = ["Missing Part Flow", "Monitor Screen", "Dashboard", "History", "Other"] as const;
+
+export type ImprovementArea = (typeof improvementAreas)[number];
+
+export type ImprovementRequest = {
+  id: string;
+  title: string;
+  area: ImprovementArea;
+  description: string;
+  submitted_by: string | null;
+  contact: string | null;
+  status: "New" | "Reviewing" | "Accepted" | "Added" | "Declined";
+  created_at: string;
+  updated_at: string;
+};
+
+export type ImprovementRequestInsert = Pick<ImprovementRequest, "title" | "area" | "description" | "submitted_by" | "contact">;

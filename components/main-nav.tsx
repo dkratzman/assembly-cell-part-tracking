@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ClipboardList, History, Monitor, PlusCircle } from "lucide-react";
+import { ClipboardList, History, Lightbulb, Monitor, PlusCircle } from "lucide-react";
 import clsx from "clsx";
 
 const navItems = [
@@ -10,6 +10,7 @@ const navItems = [
   { href: "/submit", label: "Submit", icon: PlusCircle },
   { href: "/monitor", label: "Monitor", icon: Monitor },
   { href: "/history", label: "History", icon: History },
+  { href: "/improvements", label: "Improve", icon: Lightbulb },
 ];
 
 export function MainNav() {

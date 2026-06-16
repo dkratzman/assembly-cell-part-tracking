@@ -17,6 +17,10 @@ create type criticality_level as enum ('Normal', 'Critical');
 
 create type kit_context as enum ('Kit', 'Subassembly', 'Part Only', 'Unknown');
 
+create type improvement_area as enum ('Missing Part Flow', 'Monitor Screen', 'Dashboard', 'History', 'Other');
+
+create type improvement_status as enum ('New', 'Reviewing', 'Accepted', 'Added', 'Declined');
+
 create table if not exists missing_parts (
   id uuid primary key default gen_random_uuid(),
   eso text not null check (eso ~ '^[A-Z0-9]{5}$'),
@@ -41,6 +45,18 @@ create table if not exists part_events (
   to_status part_status,
   details jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now()
+);
+
+create table if not exists improvement_requests (
+  id uuid primary key default gen_random_uuid(),
+  title text not null check (char_length(trim(title)) > 0),
+  area improvement_area not null default 'Other',
+  description text not null check (char_length(trim(description)) >= 10),
+  submitted_by text,
+  contact text,
+  status improvement_status not null default 'New',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
 
 create or replace function set_missing_parts_updated_at()
@@ -98,6 +114,7 @@ create index if not exists part_events_part_id_idx on part_events(part_id);
 
 alter table missing_parts enable row level security;
 alter table part_events enable row level security;
+alter table improvement_requests enable row level security;
 
 drop policy if exists "public read missing parts" on missing_parts;
 create policy "public read missing parts"
@@ -123,6 +140,12 @@ create policy "public read part events"
 on part_events for select
 to anon
 using (true);
+
+drop policy if exists "public insert improvement requests" on improvement_requests;
+create policy "public insert improvement requests"
+on improvement_requests for insert
+to anon
+with check (true);
 
 alter publication supabase_realtime add table missing_parts;
 alter publication supabase_realtime add table part_events;
