@@ -116,6 +116,11 @@ alter table missing_parts enable row level security;
 alter table part_events enable row level security;
 alter table improvement_requests enable row level security;
 
+grant usage on schema public to anon;
+grant usage on type improvement_area to anon;
+grant usage on type improvement_status to anon;
+grant insert on table improvement_requests to anon;
+
 drop policy if exists "public read missing parts" on missing_parts;
 create policy "public read missing parts"
 on missing_parts for select

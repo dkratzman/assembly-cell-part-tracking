@@ -28,6 +28,11 @@ create table if not exists improvement_requests (
 
 alter table improvement_requests enable row level security;
 
+grant usage on schema public to anon;
+grant usage on type improvement_area to anon;
+grant usage on type improvement_status to anon;
+grant insert on table improvement_requests to anon;
+
 drop policy if exists "public insert improvement requests" on improvement_requests;
 create policy "public insert improvement requests"
 on improvement_requests for insert
