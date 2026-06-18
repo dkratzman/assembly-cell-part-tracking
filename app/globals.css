@@ -39,7 +39,6 @@ body {
 
 button,
 input,
-textarea,
 select {
   font: inherit;
 }
@@ -209,7 +208,6 @@ label span {
 }
 
 input,
-textarea,
 select {
   width: 100%;
   border: 1px solid #c9d5e5;
@@ -224,14 +222,7 @@ select {
   padding: 0 12px;
 }
 
-textarea {
-  min-height: 160px;
-  padding: 12px;
-  resize: vertical;
-}
-
 input:focus,
-textarea:focus,
 select:focus {
   border-color: var(--cat-yellow-strong);
   outline: 3px solid rgba(255, 205, 17, 0.28);
@@ -349,10 +340,6 @@ tr.row-urgent td {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
-}
-
-.form-wide {
-  grid-column: 1 / -1;
 }
 
 .duplicate-warning {
