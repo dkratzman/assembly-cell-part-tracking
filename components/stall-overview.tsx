@@ -19,7 +19,7 @@ export function StallOverview({ parts }: { parts: MissingPart[] }) {
     const stallParts = activeParts.filter((part) => part.stall === stall);
     const oldestPart = stallParts.reduce<MissingPart | null>((oldest, part) => {
       if (!oldest) return part;
-      return minutesWaiting(part.created_at, now) > minutesWaiting(oldest.created_at, now) ? part : oldest;
+      return minutesWaiting(part, now) > minutesWaiting(oldest, now) ? part : oldest;
     }, null);
 
     return {
@@ -39,7 +39,7 @@ export function StallOverview({ parts }: { parts: MissingPart[] }) {
 }
 
 function StallCard({ summary, now }: { summary: StallSummary; now: Date }) {
-  const overOneHour = summary.oldestPart ? minutesWaiting(summary.oldestPart.created_at, now) >= 60 : false;
+  const overOneHour = summary.oldestPart ? minutesWaiting(summary.oldestPart, now) >= 60 : false;
 
   return (
     <article className="stall-card">
@@ -51,7 +51,7 @@ function StallCard({ summary, now }: { summary: StallSummary; now: Date }) {
       <span>
         <Clock size={14} />
         {summary.oldestPart ? (
-          <span className={overOneHour ? "waiting-timer overdue" : "waiting-timer"}>{waitingTimerLabel(summary.oldestPart.created_at, now)}</span>
+          <span className={overOneHour ? "waiting-timer overdue" : "waiting-timer"}>{waitingTimerLabel(summary.oldestPart, now)}</span>
         ) : (
           "No wait"
         )}

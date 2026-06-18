@@ -43,6 +43,8 @@ export type MissingPart = {
   created_at: string;
   updated_at: string;
   closed_at: string | null;
+  timer_paused_at?: string | null;
+  paused_seconds?: number;
 };
 
 export type PartEvent = {

@@ -12,16 +12,37 @@ export const activeStatuses: PartStatus[] = [
 
 export const closedStatuses: PartStatus[] = ["Installed/Closed", "Entered by Mistake"];
 
+export const timerStoppedStatuses: PartStatus[] = ["Delivered to Stall", "Installed/Closed"];
+
 export function isClosed(status: PartStatus) {
   return closedStatuses.includes(status);
 }
 
-export function minutesWaiting(createdAt: string, now = new Date()) {
-  return differenceInMinutes(now, parseISO(createdAt));
+export function isTimerStopped(status: PartStatus) {
+  return timerStoppedStatuses.includes(status);
 }
 
-export function waitingTimerLabel(createdAt: string, now = new Date()) {
-  const totalSeconds = Math.max(0, differenceInSeconds(now, parseISO(createdAt)));
+function pausedSeconds(part: MissingPart) {
+  return Math.max(0, part.paused_seconds ?? 0);
+}
+
+function timerEndDate(part: MissingPart, now = new Date()) {
+  if (part.timer_paused_at) return parseISO(part.timer_paused_at);
+  if (part.status === "Installed/Closed" && part.closed_at) return parseISO(part.closed_at);
+  if (isTimerStopped(part.status)) return parseISO(part.updated_at);
+  return now;
+}
+
+export function elapsedSeconds(part: MissingPart, now = new Date()) {
+  return Math.max(0, differenceInSeconds(timerEndDate(part, now), parseISO(part.created_at)) - pausedSeconds(part));
+}
+
+export function elapsedSecondsBetween(startAt: string, endAt: string | Date) {
+  const end = typeof endAt === "string" ? parseISO(endAt) : endAt;
+  return Math.max(0, differenceInSeconds(end, parseISO(startAt)));
+}
+
+export function formatElapsedSeconds(totalSeconds: number) {
   const days = Math.floor(totalSeconds / 86400);
   const hours = Math.floor((totalSeconds % 86400) / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -31,6 +52,18 @@ export function waitingTimerLabel(createdAt: string, now = new Date()) {
   if (days > 0) return `${days}d ${twoDigit(hours)}:${twoDigit(minutes)}:${twoDigit(seconds)}`;
   if (hours > 0) return `${hours}:${twoDigit(minutes)}:${twoDigit(seconds)}`;
   return `${minutes}:${twoDigit(seconds)}`;
+}
+
+export function minutesWaiting(part: MissingPart, now = new Date()) {
+  return Math.floor(elapsedSeconds(part, now) / 60);
+}
+
+export function waitingTimerLabel(part: MissingPart, now = new Date()) {
+  return formatElapsedSeconds(elapsedSeconds(part, now));
+}
+
+export function elapsedTimeLabel(startAt: string, endAt: string | Date) {
+  return formatElapsedSeconds(elapsedSecondsBetween(startAt, endAt));
 }
 
 export function urgencyScore(part: MissingPart, now = new Date()) {
@@ -49,11 +82,11 @@ export function urgencyScore(part: MissingPart, now = new Date()) {
     "Entered by Mistake": -1000,
   };
 
-  return criticalityWeight[part.criticality] + statusWeight[part.status] + minutesWaiting(part.created_at, now);
+  return criticalityWeight[part.criticality] + statusWeight[part.status] + minutesWaiting(part, now);
 }
 
 export function isUrgent(part: MissingPart, now = new Date()) {
-  return part.criticality !== "Normal" || minutesWaiting(part.created_at, now) >= 60;
+  return part.criticality !== "Normal" || minutesWaiting(part, now) >= 60;
 }
 
 export function statusTone(part: MissingPart) {
