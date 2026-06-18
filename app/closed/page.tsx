@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { PageHeader } from "@/components/page-header";
 import { StatusPill } from "@/components/status-pill";
-import { elapsedTimeLabel, waitingTimerLabel } from "@/lib/parts";
+import { elapsedTimeLabel } from "@/lib/parts";
 import { hasSupabaseConfig, supabase } from "@/lib/supabase";
 import type { MissingPart } from "@/lib/types";
 
@@ -81,7 +81,6 @@ export default function ClosedPartsPage() {
                 <th>Submitted</th>
                 <th>Closed</th>
                 <th>Time to Close</th>
-                <th>Timer</th>
               </tr>
             </thead>
             <tbody>
@@ -107,9 +106,6 @@ export default function ClosedPartsPage() {
                     <td>{format(new Date(closedAt), "MMM d, h:mm a")}</td>
                     <td>
                       <span className="waiting-timer">{elapsedTimeLabel(part.created_at, closedAt)}</span>
-                    </td>
-                    <td>
-                      <span className="waiting-timer">{waitingTimerLabel(part)}</span>
                     </td>
                   </tr>
                 );
