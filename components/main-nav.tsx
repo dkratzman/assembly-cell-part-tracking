@@ -6,8 +6,8 @@ import { Archive, ClipboardList, History, Monitor, PlusCircle } from "lucide-rea
 import clsx from "clsx";
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: ClipboardList },
-  { href: "/submit", label: "Submit", icon: PlusCircle },
+  { href: "/submit", label: "Submit Missing Part", icon: PlusCircle },
+  { href: "/", label: "Controller Dashboard", icon: ClipboardList },
   { href: "/monitor", label: "Monitor", icon: Monitor },
   { href: "/closed", label: "Closed", icon: Archive },
   { href: "/history", label: "History", icon: History },
