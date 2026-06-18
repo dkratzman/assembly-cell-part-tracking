@@ -5,7 +5,7 @@ import { CheckCircle2, Clock } from "lucide-react";
 import { StatusPill } from "@/components/status-pill";
 import { useLiveNow } from "@/hooks/use-live-now";
 import { isUrgent, minutesWaiting, waitingTimerLabel } from "@/lib/parts";
-import { partStatuses } from "@/lib/types";
+import { selectablePartStatuses } from "@/lib/types";
 import type { MissingPart, PartStatus } from "@/lib/types";
 
 type DashboardTableProps = {
@@ -86,6 +86,7 @@ function DashboardRow({
 
   const urgent = isUrgent(part, now);
   const overOneHour = minutesWaiting(part, now) >= 60;
+  const hasLegacyStatus = !selectablePartStatuses.includes(part.status as (typeof selectablePartStatuses)[number]);
 
   return (
     <tr className={urgent ? "row-urgent" : undefined}>
@@ -114,7 +115,12 @@ function DashboardRow({
             disabled={pending}
             onChange={(event) => update({ status: event.target.value as PartStatus })}
           >
-            {partStatuses.map((status) => (
+            {hasLegacyStatus ? (
+              <option disabled value={part.status}>
+                {part.status}
+              </option>
+            ) : null}
+            {selectablePartStatuses.map((status) => (
               <option key={status}>{status}</option>
             ))}
           </select>
@@ -131,7 +137,7 @@ function DashboardRow({
             placeholder="ETA"
             onBlur={(event) => {
               const nextEta = event.target.value.trim() || null;
-              if (nextEta !== part.eta) update({ eta: nextEta, status: nextEta && part.status === "Ordered" ? "ETA Set" : part.status });
+              if (nextEta !== part.eta) update({ eta: nextEta, status: part.status });
             }}
           />
         ) : (

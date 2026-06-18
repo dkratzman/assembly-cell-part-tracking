@@ -1,6 +1,6 @@
 "use client";
 
-import { criticalityLevels, partStatuses, stalls } from "@/lib/types";
+import { criticalityLevels, selectablePartStatuses, stalls } from "@/lib/types";
 import type { CriticalityLevel, PartStatus, Stall } from "@/lib/types";
 
 export type Filters = {
@@ -39,7 +39,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
         <span>Status</span>
         <select value={filters.status} onChange={(event) => onChange({ ...filters, status: event.target.value as Filters["status"] })}>
           <option>All</option>
-          {partStatuses.map((status) => (
+          {selectablePartStatuses.map((status) => (
             <option key={status}>{status}</option>
           ))}
         </select>

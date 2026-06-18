@@ -24,6 +24,15 @@ export const partStatuses = [
   "Entered by Mistake",
 ] as const;
 
+export const selectablePartStatuses = [
+  "Missing",
+  "Ordered",
+  "Received",
+  "Delivered to Stall",
+  "Installed/Closed",
+  "Entered by Mistake",
+] as const;
+
 export type Stall = (typeof stalls)[number];
 export type KitContext = (typeof kitContexts)[number];
 export type CriticalityLevel = (typeof criticalityLevels)[number];
