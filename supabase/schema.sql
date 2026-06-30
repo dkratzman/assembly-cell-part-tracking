@@ -17,6 +17,22 @@ create type criticality_level as enum ('Normal', 'Critical');
 
 create type kit_context as enum ('Kit', 'Subassembly', 'Part Only', 'Unknown');
 
+create table if not exists assembly_sub_builds (
+  id uuid primary key default gen_random_uuid(),
+  build_date date not null,
+  eso text not null check (eso ~ '^[A-Z0-9]{5}$'),
+  front_fuel_filters text not null default 'Open' check (front_fuel_filters in ('Open', 'Complete', 'N/A')),
+  amots text not null default 'Open' check (amots in ('Open', 'Complete', 'N/A')),
+  snake_coffin text not null default 'Open' check (snake_coffin in ('Open', 'Complete', 'N/A')),
+  water_manifolds text not null default 'Open' check (water_manifolds in ('Open', 'Complete', 'N/A')),
+  water_regulators text not null default 'Open' check (water_regulators in ('Open', 'Complete', 'N/A')),
+  oil_coolers text not null default 'Open' check (oil_coolers in ('Open', 'Complete', 'N/A')),
+  notes text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (build_date, eso)
+);
+
 create table if not exists missing_parts (
   id uuid primary key default gen_random_uuid(),
   eso text not null check (eso ~ '^[A-Z0-9]{5}$'),
@@ -84,6 +100,20 @@ create trigger missing_parts_updated_at
 before update on missing_parts
 for each row execute function set_missing_parts_updated_at();
 
+create or replace function set_assembly_sub_builds_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql
+set search_path = public, pg_temp;
+
+drop trigger if exists assembly_sub_builds_updated_at on assembly_sub_builds;
+create trigger assembly_sub_builds_updated_at
+before update on assembly_sub_builds
+for each row execute function set_assembly_sub_builds_updated_at();
+
 create or replace function private.log_missing_part_status_event()
 returns trigger as $$
 begin
@@ -117,6 +147,7 @@ for each row execute function private.log_missing_part_status_event();
 drop function if exists public.log_missing_part_status_event();
 
 create index if not exists part_events_part_id_idx on part_events(part_id);
+create index if not exists assembly_sub_builds_build_date_idx on assembly_sub_builds(build_date);
 
 update missing_parts
 set timer_paused_at = coalesce(
@@ -139,6 +170,7 @@ notify pgrst, 'reload schema';
 
 alter table missing_parts enable row level security;
 alter table part_events enable row level security;
+alter table assembly_sub_builds enable row level security;
 
 drop policy if exists "public read missing parts" on missing_parts;
 create policy "public read missing parts"
@@ -165,5 +197,25 @@ on part_events for select
 to anon
 using (true);
 
+drop policy if exists "public read assembly sub builds" on assembly_sub_builds;
+create policy "public read assembly sub builds"
+on assembly_sub_builds for select
+to anon
+using (true);
+
+drop policy if exists "public insert assembly sub builds" on assembly_sub_builds;
+create policy "public insert assembly sub builds"
+on assembly_sub_builds for insert
+to anon
+with check (true);
+
+drop policy if exists "public update assembly sub builds" on assembly_sub_builds;
+create policy "public update assembly sub builds"
+on assembly_sub_builds for update
+to anon
+using (true)
+with check (true);
+
 alter publication supabase_realtime add table missing_parts;
 alter publication supabase_realtime add table part_events;
+alter publication supabase_realtime add table assembly_sub_builds;

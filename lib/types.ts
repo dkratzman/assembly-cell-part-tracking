@@ -33,10 +33,23 @@ export const selectablePartStatuses = [
   "Entered by Mistake",
 ] as const;
 
+export const subBuildColumns = [
+  { key: "front_fuel_filters", label: "Front/Fuel Filters" },
+  { key: "amots", label: "AMOTS" },
+  { key: "snake_coffin", label: "Snake Coffin" },
+  { key: "water_manifolds", label: "Water Manifolds" },
+  { key: "water_regulators", label: "Water Regulators" },
+  { key: "oil_coolers", label: "Oil Coolers" },
+] as const;
+
+export const subBuildStatuses = ["Open", "Complete", "N/A"] as const;
+
 export type Stall = (typeof stalls)[number];
 export type KitContext = (typeof kitContexts)[number];
 export type CriticalityLevel = (typeof criticalityLevels)[number];
 export type PartStatus = (typeof partStatuses)[number];
+export type SubBuildStatus = (typeof subBuildStatuses)[number];
+export type SubBuildColumnKey = (typeof subBuildColumns)[number]["key"];
 
 export type MissingPart = {
   id: string;
@@ -74,3 +87,21 @@ export type MissingPartInsert = Pick<
   status?: PartStatus;
   eta?: string | null;
 };
+
+export type AssemblySubBuild = {
+  id: string;
+  build_date: string;
+  eso: string;
+  front_fuel_filters: SubBuildStatus;
+  amots: SubBuildStatus;
+  snake_coffin: SubBuildStatus;
+  water_manifolds: SubBuildStatus;
+  water_regulators: SubBuildStatus;
+  oil_coolers: SubBuildStatus;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type AssemblySubBuildInsert = Pick<AssemblySubBuild, "build_date" | "eso"> &
+  Partial<Pick<AssemblySubBuild, SubBuildColumnKey | "notes">>;

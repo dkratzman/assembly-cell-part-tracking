@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Archive, ClipboardList, History, Monitor, PlusCircle } from "lucide-react";
+import { Archive, ClipboardList, Factory, History, Monitor, PlusCircle } from "lucide-react";
 import clsx from "clsx";
 
 const navItems = [
   { href: "/submit", label: "Submit Missing Part", icon: PlusCircle },
   { href: "/", label: "Controller Dashboard", icon: ClipboardList },
+  { href: "/subs", label: "Assembly Cell Subs", icon: Factory },
   { href: "/monitor", label: "Monitor", icon: Monitor },
   { href: "/closed", label: "Closed", icon: Archive },
   { href: "/history", label: "History", icon: History },

@@ -268,6 +268,10 @@ tr.row-urgent td {
   background: var(--red-bg);
 }
 
+tr.row-complete td {
+  background: var(--green-bg);
+}
+
 .priority-cell {
   display: flex;
   align-items: center;
@@ -375,6 +379,112 @@ tr.row-urgent td {
 
 .submit-button {
   width: fit-content;
+}
+
+.subs-page {
+  display: grid;
+  gap: 16px;
+}
+
+.subs-page .page-header,
+.subs-page .filter-bar {
+  margin-bottom: 0;
+}
+
+.sub-build-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.sub-build-summary div {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--cat-charcoal);
+  color: #ffffff;
+  padding: 16px;
+  box-shadow: 0 6px 0 var(--cat-yellow);
+}
+
+.sub-build-summary span {
+  display: block;
+  color: var(--cat-yellow);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sub-build-summary strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.sub-build-entry {
+  box-shadow: none;
+}
+
+.sub-build-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.sub-build-filter {
+  grid-template-columns: minmax(220px, 1.5fr) minmax(170px, 0.8fr) auto;
+  align-items: end;
+}
+
+.sub-build-filter .button {
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: var(--cat-black);
+}
+
+.sub-build-table {
+  min-width: 1220px;
+}
+
+.sub-build-table th:nth-child(3),
+.sub-build-table th:nth-child(9) {
+  background: var(--cat-yellow);
+  color: var(--cat-black);
+}
+
+.cell-status-label {
+  display: grid;
+  grid-template-columns: 18px minmax(132px, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.sub-build-status-select {
+  min-width: 132px;
+  font-weight: 800;
+}
+
+.sub-build-status-select.complete {
+  border-color: #8ed4aa;
+  background: var(--green-bg);
+  color: var(--green);
+}
+
+.sub-build-status-select.not-applicable {
+  border-color: #c9c3b3;
+  background: #f5f5f2;
+  color: var(--muted);
+}
+
+.sub-build-status-select.open {
+  border-color: #d9c676;
+  background: var(--yellow-bg);
+  color: var(--yellow);
+}
+
+.sub-build-notes {
+  min-width: 180px;
 }
 
 .history-list {
@@ -494,7 +604,10 @@ tr.row-urgent td {
   }
 
   .filter-bar,
-  .form-grid {
+  .form-grid,
+  .sub-build-status-grid,
+  .sub-build-filter,
+  .sub-build-summary {
     grid-template-columns: 1fr;
   }
 
