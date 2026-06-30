@@ -1,10 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { CheckCircle2, Circle, MinusCircle } from "lucide-react";
+import { useState } from "react";
 import { format } from "date-fns";
 import clsx from "clsx";
-import { subBuildColumns, subBuildStatuses } from "@/lib/types";
+import { subBuildColumns } from "@/lib/types";
 import type { AssemblySubBuild, SubBuildColumnKey, SubBuildStatus } from "@/lib/types";
 
 type SubBuildTableProps = {
@@ -12,13 +11,11 @@ type SubBuildTableProps = {
   loading: boolean;
   error: string | null;
   onUpdateStatus: (id: string, column: SubBuildColumnKey, status: SubBuildStatus) => Promise<void>;
-  onUpdateNotes: (id: string, notes: string | null) => Promise<void>;
 };
 
-export function SubBuildTable({ builds, loading, error, onUpdateStatus, onUpdateNotes }: SubBuildTableProps) {
+export function SubBuildTable({ builds, loading, error, onUpdateStatus }: SubBuildTableProps) {
   if (loading) return <div className="panel muted">Loading sub builds...</div>;
   if (error) return <div className="panel error">Unable to load sub builds: {error}</div>;
-  if (builds.length === 0) return <div className="panel muted">No sub builds have been added yet.</div>;
 
   return (
     <div className="table-wrap sub-build-table-wrap">
@@ -30,13 +27,18 @@ export function SubBuildTable({ builds, loading, error, onUpdateStatus, onUpdate
             {subBuildColumns.map((column) => (
               <th key={column.key}>{column.label}</th>
             ))}
-            <th>Notes</th>
           </tr>
         </thead>
         <tbody>
-          {builds.map((build) => (
-            <SubBuildRow key={build.id} build={build} onUpdateStatus={onUpdateStatus} onUpdateNotes={onUpdateNotes} />
-          ))}
+          {builds.length === 0 ? (
+            <tr>
+              <td className="sub-empty-row" colSpan={subBuildColumns.length + 2}>
+                No ESOs have been added yet.
+              </td>
+            </tr>
+          ) : (
+            builds.map((build) => <SubBuildRow key={build.id} build={build} onUpdateStatus={onUpdateStatus} />)
+          )}
         </tbody>
       </table>
     </div>
@@ -46,21 +48,15 @@ export function SubBuildTable({ builds, loading, error, onUpdateStatus, onUpdate
 function SubBuildRow({
   build,
   onUpdateStatus,
-  onUpdateNotes,
 }: {
   build: AssemblySubBuild;
   onUpdateStatus: SubBuildTableProps["onUpdateStatus"];
-  onUpdateNotes: SubBuildTableProps["onUpdateNotes"];
 }) {
   const [pendingCell, setPendingCell] = useState<SubBuildColumnKey | null>(null);
-  const [pendingNotes, setPendingNotes] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const completeCount = useMemo(() => subBuildColumns.filter((column) => build[column.key] === "Complete").length, [build]);
-  const requiredCount = useMemo(() => subBuildColumns.filter((column) => build[column.key] !== "N/A").length, [build]);
-  const rowComplete = requiredCount > 0 && completeCount === requiredCount;
-
   async function updateStatus(column: SubBuildColumnKey, status: SubBuildStatus) {
+    if (build[column] === "N/A") return;
     setPendingCell(column);
     setError(null);
     try {
@@ -72,68 +68,57 @@ function SubBuildRow({
     }
   }
 
-  async function updateNotes(notes: string | null) {
-    setPendingNotes(true);
-    setError(null);
-    try {
-      await onUpdateNotes(build.id, notes);
-    } catch (updateError) {
-      setError(updateError instanceof Error ? updateError.message : "Unable to update notes.");
-    } finally {
-      setPendingNotes(false);
-    }
-  }
-
   return (
-    <tr className={rowComplete ? "row-complete" : undefined}>
+    <tr>
       <td>
-        <strong>{format(new Date(`${build.build_date}T00:00:00`), "M/d/yyyy")}</strong>
-        <small>
-          {completeCount}/{requiredCount} complete
-        </small>
+        {format(new Date(`${build.build_date}T00:00:00`), "M/d/yyyy")}
       </td>
       <td>
-        <strong>{build.eso}</strong>
+        {build.eso}
         {error ? <small className="error">{error}</small> : null}
       </td>
       {subBuildColumns.map((column) => (
-        <td key={column.key}>
-          <label className="cell-status-label">
-            <StatusIcon status={build[column.key]} />
-            <select
-              className={clsx("sub-build-status-select", statusClass(build[column.key]))}
-              value={build[column.key]}
-              disabled={pendingCell === column.key}
-              onChange={(event) => updateStatus(column.key, event.target.value as SubBuildStatus)}
-              aria-label={`${column.label} status for ${build.eso}`}
-            >
-              {subBuildStatuses.map((status) => (
-                <option key={status}>{status}</option>
-              ))}
-            </select>
-          </label>
-        </td>
-      ))}
-      <td>
-        <input
-          className="inline-input sub-build-notes"
-          defaultValue={build.notes ?? ""}
-          disabled={pendingNotes}
-          placeholder="None"
-          onBlur={(event) => {
-            const nextNotes = event.target.value.trim() || null;
-            if (nextNotes !== build.notes) updateNotes(nextNotes);
-          }}
+        <SubBuildCell
+          key={column.key}
+          column={column.key}
+          label={column.label}
+          build={build}
+          pending={pendingCell === column.key}
+          onUpdateStatus={updateStatus}
         />
-      </td>
+      ))}
     </tr>
   );
 }
 
-function StatusIcon({ status }: { status: SubBuildStatus }) {
-  if (status === "Complete") return <CheckCircle2 aria-hidden="true" size={18} />;
-  if (status === "N/A") return <MinusCircle aria-hidden="true" size={18} />;
-  return <Circle aria-hidden="true" size={18} />;
+function SubBuildCell({
+  build,
+  column,
+  label,
+  pending,
+  onUpdateStatus,
+}: {
+  build: AssemblySubBuild;
+  column: SubBuildColumnKey;
+  label: string;
+  pending: boolean;
+  onUpdateStatus: (column: SubBuildColumnKey, status: SubBuildStatus) => Promise<void>;
+}) {
+  const status = build[column];
+  const nextStatus = status === "Complete" ? "Open" : "Complete";
+
+  return (
+    <td className={clsx("sub-status-cell", statusClass(status))}>
+      <button
+        type="button"
+        disabled={pending || status === "N/A"}
+        onClick={() => onUpdateStatus(column, nextStatus)}
+        aria-label={`${label} for ${build.eso}: ${status}. Click to mark ${nextStatus}.`}
+      >
+        {status === "N/A" ? "NA" : ""}
+      </button>
+    </td>
+  );
 }
 
 function statusClass(status: SubBuildStatus) {

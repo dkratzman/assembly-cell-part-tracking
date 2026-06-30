@@ -34,8 +34,8 @@ export const selectablePartStatuses = [
 ] as const;
 
 export const subBuildColumns = [
-  { key: "front_fuel_filters", label: "Front/Fuel Filters" },
-  { key: "amots", label: "AMOTS" },
+  { key: "front_fuel_filters", label: "Front/FuelFilters" },
+  { key: "amots", label: "AMOTs" },
   { key: "snake_coffin", label: "Snake Coffin" },
   { key: "water_manifolds", label: "Water Manifolds" },
   { key: "water_regulators", label: "Water Regulators" },
