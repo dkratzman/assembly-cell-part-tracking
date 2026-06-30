@@ -34,12 +34,12 @@ export const selectablePartStatuses = [
 ] as const;
 
 export const subBuildColumns = [
-  { key: "front_fuel_filters", label: "Front/FuelFilters" },
-  { key: "amots", label: "AMOTs" },
+  { key: "front_fuel_filters", label: "Front Filter" },
+  { key: "amots", label: "AMOT" },
   { key: "snake_coffin", label: "Snake Coffin" },
-  { key: "water_manifolds", label: "Water Manifolds" },
-  { key: "water_regulators", label: "Water Regulators" },
-  { key: "oil_coolers", label: "Oil Coolers" },
+  { key: "water_manifolds", label: "Water Manifold" },
+  { key: "water_regulators", label: "Water Regulator" },
+  { key: "oil_coolers", label: "Oil Cooler" },
 ] as const;
 
 export const subBuildStatuses = ["Open", "Complete", "N/A"] as const;

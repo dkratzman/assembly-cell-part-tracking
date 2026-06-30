@@ -67,7 +67,7 @@ export function SubBuildForm({
   }
 
   return (
-    <form className="sub-build-entry" onSubmit={handleSubmit}>
+    <form className="panel sub-build-entry" onSubmit={handleSubmit}>
       <label>
         <span>Build Date</span>
         <input type="date" value={form.build_date} onChange={(event) => update("build_date", event.target.value)} required />

@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/page-header";
 import { SubBuildForm } from "@/components/sub-build-form";
 import { SubBuildTable } from "@/components/sub-build-table";
 import { useSubBuilds } from "@/hooks/use-sub-builds";
@@ -9,9 +10,13 @@ export default function SubsPage() {
 
   return (
     <section className="page subs-page">
-      <h2 className="subs-title">Assembly Cell Subs Page</h2>
-      <SubBuildTable builds={builds} loading={loading} error={error} onUpdateStatus={updateBuildStatus} />
+      <PageHeader
+        eyebrow="Live sub assembly tracker"
+        title="Assembly Cell Subs"
+        description="Add an engine build date and ESO, then mark each sub assembly complete as technicians finish the work."
+      />
       <SubBuildForm onSubmitBuild={addBuild} existingBuilds={builds} />
+      <SubBuildTable builds={builds} loading={loading} error={error} onUpdateStatus={updateBuildStatus} />
     </section>
   );
 }

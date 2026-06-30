@@ -108,17 +108,24 @@ function SubBuildCell({
   const nextStatus = status === "Complete" ? "Open" : "Complete";
 
   return (
-    <td className={clsx("sub-status-cell", statusClass(status))}>
+    <td>
       <button
+        className={clsx("sub-status-button", statusClass(status))}
         type="button"
         disabled={pending || status === "N/A"}
         onClick={() => onUpdateStatus(column, nextStatus)}
         aria-label={`${label} for ${build.eso}: ${status}. Click to mark ${nextStatus}.`}
       >
-        {status === "N/A" ? "NA" : ""}
+        {statusLabel(status)}
       </button>
     </td>
   );
+}
+
+function statusLabel(status: SubBuildStatus) {
+  if (status === "Complete") return "Complete";
+  if (status === "N/A") return "N/A";
+  return "Not Built";
 }
 
 function statusClass(status: SubBuildStatus) {
