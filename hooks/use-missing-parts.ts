@@ -4,6 +4,24 @@ import { useCallback, useEffect, useState } from "react";
 import { hasSupabaseConfig, isPreviewMode, supabase } from "@/lib/supabase";
 import type { MissingPart, MissingPartInsert } from "@/lib/types";
 
+const previewMissingPartsKey = "assembly-cell-preview-missing-parts";
+
+function loadPreviewParts() {
+  if (!isPreviewMode || typeof window === "undefined") return [];
+
+  try {
+    const rawParts = window.sessionStorage.getItem(previewMissingPartsKey);
+    return rawParts ? (JSON.parse(rawParts) as MissingPart[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function savePreviewParts(parts: MissingPart[]) {
+  if (!isPreviewMode || typeof window === "undefined") return;
+  window.sessionStorage.setItem(previewMissingPartsKey, JSON.stringify(parts));
+}
+
 export function useMissingParts() {
   const [parts, setParts] = useState<MissingPart[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +39,7 @@ export function useMissingParts() {
       setError(fetchError.message);
       return;
     }
-    setParts((data ?? []) as MissingPart[]);
+    setParts([...loadPreviewParts(), ...((data ?? []) as MissingPart[])]);
     setError(null);
   }, []);
 
@@ -72,7 +90,11 @@ export function useMissingParts() {
         paused_seconds: 0,
       };
 
-      setParts((current) => [previewPart, ...current]);
+      setParts((current) => {
+        const nextParts = [previewPart, ...current];
+        savePreviewParts(nextParts.filter((currentPart) => currentPart.id.startsWith("preview-")));
+        return nextParts;
+      });
       return;
     }
 
@@ -85,8 +107,8 @@ export function useMissingParts() {
     if (!hasSupabaseConfig) throw new Error("Supabase is not configured yet.");
     if (isPreviewMode) {
       const now = new Date().toISOString();
-      setParts((current) =>
-        current.map((part) =>
+      setParts((current) => {
+        const nextParts = current.map((part) =>
           part.id === id
             ? {
                 ...part,
@@ -100,8 +122,11 @@ export function useMissingParts() {
                       : part.closed_at,
               }
             : part,
-        ),
-      );
+        );
+
+        savePreviewParts(nextParts.filter((part) => part.id.startsWith("preview-")));
+        return nextParts;
+      });
       return;
     }
 

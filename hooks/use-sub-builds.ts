@@ -6,6 +6,24 @@ import type { AssemblySubBuild, AssemblySubBuildInsert, SubBuildColumnKey, SubBu
 
 type SubBuildPatch = Partial<Pick<AssemblySubBuild, SubBuildColumnKey | "notes">>;
 
+const previewSubBuildsKey = "assembly-cell-preview-sub-builds";
+
+function loadPreviewBuilds() {
+  if (!isPreviewMode || typeof window === "undefined") return [];
+
+  try {
+    const rawBuilds = window.sessionStorage.getItem(previewSubBuildsKey);
+    return rawBuilds ? (JSON.parse(rawBuilds) as AssemblySubBuild[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function savePreviewBuilds(builds: AssemblySubBuild[]) {
+  if (!isPreviewMode || typeof window === "undefined") return;
+  window.sessionStorage.setItem(previewSubBuildsKey, JSON.stringify(builds));
+}
+
 export function useSubBuilds() {
   const [builds, setBuilds] = useState<AssemblySubBuild[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,7 +47,11 @@ export function useSubBuilds() {
       return;
     }
 
-    setBuilds((data ?? []) as AssemblySubBuild[]);
+    setBuilds(
+      [...loadPreviewBuilds(), ...((data ?? []) as AssemblySubBuild[])].sort(
+        (a, b) => a.build_date.localeCompare(b.build_date) || a.eso.localeCompare(b.eso),
+      ),
+    );
     setError(null);
   }, []);
 
@@ -76,9 +98,13 @@ export function useSubBuilds() {
         updated_at: now,
       };
 
-      setBuilds((current) =>
-        [...current, previewBuild].sort((a, b) => a.build_date.localeCompare(b.build_date) || a.eso.localeCompare(b.eso)),
-      );
+      setBuilds((current) => {
+        const nextBuilds = [...current, previewBuild].sort(
+          (a, b) => a.build_date.localeCompare(b.build_date) || a.eso.localeCompare(b.eso),
+        );
+        savePreviewBuilds(nextBuilds.filter((currentBuild) => currentBuild.id.startsWith("preview-")));
+        return nextBuilds;
+      });
       return;
     }
 
@@ -91,7 +117,11 @@ export function useSubBuilds() {
     if (!hasSupabaseConfig) throw new Error("Supabase is not configured yet.");
     if (isPreviewMode) {
       const now = new Date().toISOString();
-      setBuilds((current) => current.map((build) => (build.id === id ? { ...build, ...patch, updated_at: now } : build)));
+      setBuilds((current) => {
+        const nextBuilds = current.map((build) => (build.id === id ? { ...build, ...patch, updated_at: now } : build));
+        savePreviewBuilds(nextBuilds.filter((build) => build.id.startsWith("preview-")));
+        return nextBuilds;
+      });
       return;
     }
 
