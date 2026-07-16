@@ -83,6 +83,8 @@ Production NEXT_PUBLIC_SITE_ENV=production
 
 The important part is that Preview sets `NEXT_PUBLIC_SITE_ENV=preview`. If Preview points to production Supabase, this keeps Preview read-only at the app layer. When a separate preview Supabase project is available, Preview can point to that project instead.
 
+On Vercel, the app also falls back to Vercel's built-in deployment environment. That means branch preview deployments should automatically run as preview when `NEXT_PUBLIC_SITE_ENV` is not set, but setting it explicitly is still recommended so the intent is visible in the Vercel dashboard.
+
 ## Release Checklist
 
 Before promoting a preview change to production:
