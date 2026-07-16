@@ -91,15 +91,17 @@ function DashboardRow({
   return (
     <tr className={urgent ? "row-urgent" : undefined}>
       <td>
-        <div className="priority-cell">
-          {part.criticality === "Critical" ? <Clock size={18} /> : null}
-          {part.status === "Delivered to Stall" ? <CheckCircle2 size={18} /> : null}
-          <span>{part.criticality}</span>
+        <div className="priority-stack">
+          <div className="priority-cell">
+            {part.criticality === "Critical" ? <Clock size={18} /> : null}
+            {part.status === "Delivered to Stall" ? <CheckCircle2 size={18} /> : null}
+            <span>{part.criticality}</span>
+          </div>
+          {part.replacement_for_defective_part ? <small className="quality-flag">Quality - Replacement</small> : null}
         </div>
       </td>
       <td>
         <strong>{part.part_no}</strong>
-        {part.replacement_for_defective_part ? <small className="quality-flag">Quality replacement</small> : null}
       </td>
       <td>
         <span>{part.kit_no || part.kit_context}</span>

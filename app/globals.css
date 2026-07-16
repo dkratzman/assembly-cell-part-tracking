@@ -281,6 +281,11 @@ tr.row-complete td {
   background: var(--green-bg);
 }
 
+.priority-stack {
+  display: grid;
+  gap: 4px;
+}
+
 .priority-cell {
   display: flex;
   align-items: center;
