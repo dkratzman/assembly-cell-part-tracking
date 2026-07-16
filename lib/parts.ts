@@ -7,7 +7,6 @@ export const activeStatuses: PartStatus[] = [
   "ETA Set",
   "En Route",
   "Received",
-  "Delivered to Stall",
 ];
 
 export const closedStatuses: PartStatus[] = ["Installed/Closed", "Entered by Mistake"];
