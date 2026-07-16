@@ -92,5 +92,6 @@ Before promoting a preview change to production:
 - Submit a test record in preview and confirm the preview banner is visible.
 - Refresh the preview page and confirm the simulated test record disappears.
 - Confirm production Supabase has no test records from preview.
+- If the change includes a Supabase schema file, apply the safe `alter table ... add column if not exists` SQL before deploying the production website.
 - Merge to `main` only after preview testing passes.
 - Keep the previous production deployment available for rollback.

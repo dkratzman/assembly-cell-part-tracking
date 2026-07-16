@@ -14,6 +14,7 @@ type FormState = {
   part_no: string;
   quantity: string;
   criticality: CriticalityLevel;
+  replacement_for_defective_part: boolean;
 };
 
 const initialState: FormState = {
@@ -24,6 +25,7 @@ const initialState: FormState = {
   part_no: "",
   quantity: "1",
   criticality: "Normal",
+  replacement_for_defective_part: false,
 };
 
 export function SubmitPartForm({
@@ -96,6 +98,7 @@ export function SubmitPartForm({
         part_no: partNo,
         quantity,
         criticality: form.criticality,
+        replacement_for_defective_part: form.replacement_for_defective_part,
       });
       setForm(initialState);
       setAckDuplicate(false);
@@ -157,6 +160,15 @@ export function SubmitPartForm({
           </select>
         </label>
       </div>
+
+      <label className="quality-request">
+        <input
+          type="checkbox"
+          checked={form.replacement_for_defective_part}
+          onChange={(event) => update("replacement_for_defective_part", event.target.checked)}
+        />
+        <span>Replacement for Defective Part (Quality)</span>
+      </label>
 
       {duplicate ? (
         <label className="duplicate-warning">

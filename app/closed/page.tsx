@@ -108,6 +108,7 @@ export default function ClosedPartsPage() {
                   <tr key={part.id}>
                     <td>
                       <strong>{part.part_no}</strong>
+                      {part.replacement_for_defective_part ? <small className="quality-flag">Quality replacement</small> : null}
                     </td>
                     <td>
                       <span>{part.kit_no || part.kit_context}</span>

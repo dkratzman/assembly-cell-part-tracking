@@ -42,6 +42,7 @@ create table if not exists missing_parts (
   part_no text not null,
   quantity integer not null default 1 check (quantity > 0),
   criticality criticality_level not null default 'Normal',
+  replacement_for_defective_part boolean not null default false,
   status part_status not null default 'Missing',
   eta text,
   created_at timestamptz not null default now(),
@@ -53,6 +54,7 @@ create table if not exists missing_parts (
 
 alter table missing_parts add column if not exists timer_paused_at timestamptz;
 alter table missing_parts add column if not exists paused_seconds integer not null default 0;
+alter table missing_parts add column if not exists replacement_for_defective_part boolean not null default false;
 
 create table if not exists part_events (
   id uuid primary key default gen_random_uuid(),
@@ -119,7 +121,19 @@ returns trigger as $$
 begin
   if tg_op = 'INSERT' then
     insert into public.part_events (part_id, event_type, to_status, details)
-    values (new.id, 'created', new.status, jsonb_build_object('eso', new.eso, 'part_no', new.part_no));
+    values (
+      new.id,
+      'created',
+      new.status,
+      jsonb_build_object(
+        'eso',
+        new.eso,
+        'part_no',
+        new.part_no,
+        'replacement_for_defective_part',
+        new.replacement_for_defective_part
+      )
+    );
   elsif old.status is distinct from new.status or old.eta is distinct from new.eta then
     insert into public.part_events (part_id, event_type, from_status, to_status, details)
     values (

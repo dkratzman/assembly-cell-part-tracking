@@ -60,6 +60,7 @@ export type MissingPart = {
   part_no: string;
   quantity: number;
   criticality: CriticalityLevel;
+  replacement_for_defective_part?: boolean;
   status: PartStatus;
   eta: string | null;
   created_at: string;
@@ -82,7 +83,7 @@ export type PartEvent = {
 
 export type MissingPartInsert = Pick<
   MissingPart,
-  "eso" | "stall" | "kit_context" | "kit_no" | "part_no" | "quantity" | "criticality"
+  "eso" | "stall" | "kit_context" | "kit_no" | "part_no" | "quantity" | "criticality" | "replacement_for_defective_part"
 > & {
   status?: PartStatus;
   eta?: string | null;

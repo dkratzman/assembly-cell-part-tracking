@@ -62,6 +62,7 @@ export function useMissingParts() {
         part_no: part.part_no,
         quantity: part.quantity,
         criticality: part.criticality,
+        replacement_for_defective_part: part.replacement_for_defective_part ?? false,
         status: part.status ?? "Missing",
         eta: part.eta ?? null,
         created_at: now,

@@ -378,6 +378,24 @@ tr.row-complete td {
   color: var(--yellow);
 }
 
+.quality-request {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+}
+
+.quality-request input {
+  width: 18px;
+  height: 18px;
+}
+
+.quality-request span,
+.quality-flag {
+  color: var(--blue);
+  font-weight: 900;
+}
+
 .form-alert {
   display: flex;
   align-items: center;
