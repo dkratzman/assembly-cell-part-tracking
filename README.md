@@ -39,3 +39,9 @@ Simple missing-parts tracker for the Assembly Cell Section.
 ## Deployment
 
 Deploy the repository to Vercel and add the same Supabase environment variables in the Vercel project settings.
+
+## Preview Upgrades
+
+Do upgrade work on a separate branch and test it against a preview Supabase project before promoting it to production.
+
+See [docs/preview-workflow.md](docs/preview-workflow.md) for the full safe-preview process.
