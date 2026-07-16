@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { hasSupabaseConfig, supabase } from "@/lib/supabase";
+import { hasSupabaseConfig, isPreviewMode, supabase } from "@/lib/supabase";
 import type { AssemblySubBuild, AssemblySubBuildInsert, SubBuildColumnKey, SubBuildStatus } from "@/lib/types";
 
 type SubBuildPatch = Partial<Pick<AssemblySubBuild, SubBuildColumnKey | "notes">>;
@@ -59,6 +59,29 @@ export function useSubBuilds() {
 
   async function addBuild(build: AssemblySubBuildInsert) {
     if (!hasSupabaseConfig) throw new Error("Supabase is not configured yet.");
+    if (isPreviewMode) {
+      const now = new Date().toISOString();
+      const previewBuild: AssemblySubBuild = {
+        id: `preview-${crypto.randomUUID()}`,
+        build_date: build.build_date,
+        eso: build.eso,
+        front_fuel_filters: build.front_fuel_filters ?? "Open",
+        amots: build.amots ?? "Open",
+        snake_coffin: build.snake_coffin ?? "Open",
+        water_manifolds: build.water_manifolds ?? "Open",
+        water_regulators: build.water_regulators ?? "Open",
+        oil_coolers: build.oil_coolers ?? "Open",
+        notes: build.notes ?? null,
+        created_at: now,
+        updated_at: now,
+      };
+
+      setBuilds((current) =>
+        [...current, previewBuild].sort((a, b) => a.build_date.localeCompare(b.build_date) || a.eso.localeCompare(b.eso)),
+      );
+      return;
+    }
+
     const { error: insertError } = await supabase.from("assembly_sub_builds").insert(build);
     if (insertError) throw insertError;
     await loadBuilds();
@@ -66,6 +89,12 @@ export function useSubBuilds() {
 
   async function updateBuild(id: string, patch: SubBuildPatch) {
     if (!hasSupabaseConfig) throw new Error("Supabase is not configured yet.");
+    if (isPreviewMode) {
+      const now = new Date().toISOString();
+      setBuilds((current) => current.map((build) => (build.id === id ? { ...build, ...patch, updated_at: now } : build)));
+      return;
+    }
+
     const { error: updateError } = await supabase.from("assembly_sub_builds").update(patch).eq("id", id);
     if (updateError) throw updateError;
     await loadBuilds();

@@ -108,6 +108,15 @@ main {
   min-width: 0;
 }
 
+.preview-banner {
+  border-bottom: 1px solid #f4c05f;
+  background: var(--yellow-bg);
+  color: var(--yellow);
+  padding: 12px 32px;
+  font-size: 14px;
+  font-weight: 900;
+}
+
 .page {
   width: min(1480px, 100%);
   margin: 0 auto;
@@ -554,6 +563,10 @@ tr.row-complete td {
 
   .page {
     padding: 22px 14px;
+  }
+
+  .preview-banner {
+    padding: 12px 14px;
   }
 
   .page-header {

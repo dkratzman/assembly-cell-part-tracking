@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MainNav } from "@/components/main-nav";
+import { PreviewModeBanner } from "@/components/preview-mode-banner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -19,7 +20,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
             <MainNav />
           </aside>
-          <main>{children}</main>
+          <main>
+            <PreviewModeBanner />
+            {children}
+          </main>
         </div>
       </body>
     </html>
